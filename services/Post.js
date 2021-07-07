@@ -1,3 +1,4 @@
+const PostModel = require('../models/Post');
 const service = {};
 
 service.verifyCreatedField = ({ title, description, image, user }) => {
@@ -41,6 +42,7 @@ service.create = async({ title, description, image, user }) => {
             }
         }
     } catch (err) {
+        console.log(err);
         serviceResponse = {
             success: false,
             content: {

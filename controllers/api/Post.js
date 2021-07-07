@@ -2,7 +2,7 @@ const service = require('../../services/Post');
 
 const controller = {};
 
-controller.createPost = async(req, res) => {
+controller.create = async(req, res) => {
     const { body } = req;
     const validatedPost = service.verifyCreatedField(body);
     if (!validatedPost.success) {
@@ -14,7 +14,7 @@ controller.createPost = async(req, res) => {
     const post = await service.create(body);
     console.log(post);
 
-    if (post.success === false) {
+    if (!post.success) {
         return res.status(500).json(post.content);
     }
 
