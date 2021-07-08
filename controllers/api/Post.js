@@ -1,5 +1,6 @@
 const service = require('../../services/Post');
 const { verifyByID } = require('../../utils/MongoUtils');
+const { verifyTypeNumber } = require('../../utils/MicUtil');
 const controller = {};
 
 controller.create = async(req, res) => {
@@ -41,4 +42,79 @@ controller.findOneById = async(req, res) => {
     }
 }
 
+controller.findAll = async(req, res) => {
+    const { page = 0, limit = 10 } = req.query;
+    if (!verifyTypeNumber(page, limit)) {
+        return res.status(400).json({ error: "Error of parameters" });
+    }
+
+    try {
+        const posts = await service.findAll(parseInt(page), parseInt(limit));
+        console.log(posts);
+        return res.status(200).json(posts.content);
+    } catch (err) {
+        throw new Error("Internal Server Error");
+    }
+
+
+}
+
+controller.addLike = async(req, res) => {
+
+    const { _id } = req.body;
+    if (!verifyByID(_id)) {
+        return res.status(400).json({ msg: "Invalid Id" });
+    }
+
+    try {
+        const postExists = await service.findOneById(_id);
+        if (!postExists.success) {
+            return res.status(404).json(postExists.content)
+        }
+        const likeAdded = await service.addLike(postExists.content);
+        if (!likeAdded.success) {
+            return res.status(409).json(likeAdded.content);
+        }
+        return res.status(200).json(likeAdded.content);
+    } catch (error) {
+
+        return res.status(500).json({ msg: "Internal server error" });
+    }
+}
+
+controller.updatePost = async(req, res) => {
+    const { _id } = req.body;
+
+    if (!verifyByID(_id)) {
+        return res.status(400).json({ msg: "Invalid Id" });
+    }
+
+    const fieldVerified = service.verifyUpdateFields(req.body);
+
+    if (!fieldVerified.success) {
+        return res.status(400).json(fieldVerified.content);
+    }
+
+    try {
+        const postExists = await service.findOneById(_id);
+        if (!postExists.success) {
+            return res.status(404).json(postExists.content);
+        }
+
+        const postUpdated = await service.updateOneByID(
+            postExists.content,
+            fieldVerified.content,
+        );
+
+
+        if (!postUpdated.success) {
+            return res.status(400).json(postUpdated.content);
+        }
+
+        return res.status(200).json(postUpdated.content)
+    } catch (error) {
+        console.log(error)
+        return res.status(500).json({ error: error.message });
+    }
+}
 module.exports = controller;

@@ -21,6 +21,30 @@ service.verifyCreatedField = ({ title, description, image, user }) => {
     }
     return serviceResponse;
 }
+
+
+service.verifyUpdateFields = ({ title, description, image }) => {
+    let serviceResponse = {
+        success: true,
+        content: {}
+    }
+
+    if (!title && !description && !image) {
+        serviceResponse = {
+            success: false,
+            content: {
+                msg: "empty fields"
+            }
+        }
+    }
+
+    if (title) serviceResponse.content.title = title;
+    if (description) serviceResponse.content.description = description;
+    if (image) serviceResponse.content.image = image;
+
+    return serviceResponse;
+
+}
 service.create = async({ title, description, image, user }) => {
     let serviceResponse = {
         success: true,
@@ -85,6 +109,91 @@ service.findOneById = async(_id) => {
     } catch (error) {
         throw new Error("Internal Server Error");
     }
+}
+
+service.findAll = async(page, limit) => {
+
+    let serviceResponse = {
+        success: true,
+        content: {}
+    };
+
+    try {
+        const posts = await PostModel.find({}, undefined, {
+            skip: page * limit,
+            limit: limit,
+            sort: [{ updateAt: -1 }]
+        }).exec()
+
+        serviceResponse.content = posts
+        return serviceResponse;
+    } catch (err) {
+        throw new Error("Internal Server Error");
+    }
+}
+
+service.addLike = async(post) => {
+
+    let serviceResponse = {
+        success: true,
+        content: {
+            msg: "Like added successfully"
+        }
+    }
+    try {
+        post.likes += 1;
+        const likeAdded = await PostModel.save();
+
+        if (!likeAdded) {
+            serviceResponse = {
+                success: false,
+                content: {
+                    msg: " Not added "
+                }
+            }
+        }
+        return serviceResponse;
+    } catch (error) {
+        throw new Error('Internal server error');
+    }
+}
+
+service.updateOneByID = async(post, contentToUpdate) => {
+
+    let serviceResponse = {
+        success: true,
+        content: {
+            msg: "Post Update successful"
+        }
+    }
+
+    try {
+        const updatePost = await PostModel.findByIdAndUpdate(post._id, {
+            ...contentToUpdate,
+            $push: {
+                history: {
+                    title: post.title,
+                    description: post.description,
+                    image: post.image,
+                    modifiedAt: new Date(),
+                }
+            }
+        });
+
+        if (!updatePost) {
+            serviceResponse = {
+                success: false,
+                content: {
+                    msg: "Post not Update"
+                }
+            }
+        }
+        return serviceResponse;
+    } catch (error) {
+        console.log(error);
+        throw new Error('Internal server error');
+    }
+
 }
 
 module.exports = service;
