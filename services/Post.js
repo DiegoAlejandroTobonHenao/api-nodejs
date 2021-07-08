@@ -41,17 +41,49 @@ service.create = async({ title, description, image, user }) => {
                 }
             }
         }
-    } catch (err) {
-        console.log(err);
-        serviceResponse = {
-            success: false,
-            content: {
-                msg: "Internal error occurred"
-            }
-        }
 
-    } finally {
         return serviceResponse;
+    } catch (err) {
+        throw new Error("Internal Server Error")
+            /**
+             *  console.log(err);
+                serviceResponse = {
+                success: false,
+                content: {
+                    msg: "Internal error occurred"
+                }
+            }
+
+            } finally {
+            return serviceResponse;
+            }
+             */
+    }
+}
+
+service.findOneById = async(_id) => {
+    let serviceResponse = {
+        success: true,
+        content: {
+            msg: "Post Found"
+        }
+    }
+
+    try {
+        const post = await PostModel.findById(_id).exec();
+        if (!post) {
+            serviceResponse = {
+                success: false,
+                content: {
+                    error: " Not found"
+                }
+            }
+        } else {
+            serviceResponse.content = post;
+        }
+        return serviceResponse;
+    } catch (error) {
+        throw new Error("Internal Server Error");
     }
 }
 

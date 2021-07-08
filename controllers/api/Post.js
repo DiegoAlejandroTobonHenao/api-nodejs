@@ -1,5 +1,5 @@
 const service = require('../../services/Post');
-
+const { verifyByID } = require('../../utils/MongoUtils');
 const controller = {};
 
 controller.create = async(req, res) => {
@@ -9,16 +9,36 @@ controller.create = async(req, res) => {
         return res.status(400).json(validatedPost.content);
     }
 
-    console.log(validatedPost)
-    console.log(body)
-    const post = await service.create(body);
-    console.log(post);
+    try {
+        const post = await service.create(body);
+        if (!post.success) {
+            return res.status(409).json(post.content);
+            // peticion no aceptable
+        }
+        return res.status(201).json(post.content);
 
-    if (!post.success) {
-        return res.status(500).json(post.content);
+    } catch (err) {
+        return res.status(500).json({ error: err.message });
     }
+}
 
-    res.status(201).json(post.content);
+controller.findOneById = async(req, res) => {
+    const { _id } = req.params;
+    if (!verifyByID(_id)) {
+        return res.status(400).json({ error: "Error Id" })
+    }
+    try {
+
+        const postExists = await service.findOneById(_id);
+
+        if (!postExists.success) {
+            return res.status(400).json(postExists.content);
+        }
+
+        return res.status(200).json(postExists.content);
+    } catch (err) {
+        throw new Error("Internal server error");
+    }
 }
 
 module.exports = controller;
