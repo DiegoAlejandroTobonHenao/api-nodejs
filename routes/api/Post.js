@@ -7,5 +7,6 @@ router.get('/id/:_id', controller.findOneById);
 router.get('/all', controller.findAll);
 router.patch('/like', controller.addLike);
 router.put('/', controller.updatePost);
+router.delete('/', controller.deleteOnByID)
 
 module.exports = router;

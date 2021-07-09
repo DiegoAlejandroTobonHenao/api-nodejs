@@ -196,4 +196,29 @@ service.updateOneByID = async(post, contentToUpdate) => {
 
 }
 
+service.deleteOnByID = async(_id) => {
+
+    let serviceResponse = {
+        success: true,
+        content: {
+            msg: "Post deleted successful"
+        }
+    }
+
+    try {
+        const postDeleted = await PostModel.findByIdAndDelete(_id).exec();
+        if (!postDeleted) {
+
+            serviceResponse = {
+                success: false,
+                content: {
+                    msg: "Post not deleted"
+                }
+            }
+        }
+        return serviceResponse;
+    } catch (error) {
+        throw new Error("Internal Server Error");
+    }
+}
 module.exports = service;

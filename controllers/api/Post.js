@@ -117,4 +117,28 @@ controller.updatePost = async(req, res) => {
         return res.status(500).json({ error: error.message });
     }
 }
+
+controller.deleteOnByID = async(req, res) => {
+    const { _id } = req.body;
+
+    if (!verifyByID(_id)) {
+        return res.status(400).json({ msg: "Invalid Id" });
+    }
+
+    try {
+        const post = await service.findOneById(_id);
+        if (!post.success) {
+            return res.status(404).json(post.content);
+        }
+
+        const postDeleted = await service.deleteOnByID(_id);
+
+        if (!postDeleted.success) {
+            return res.status(400).json(postDeleted.content);
+        }
+        return res.status(200).json(postDeleted.content);
+    } catch (err) {
+        return res.status(500).json({ msg: err.message });
+    }
+}
 module.exports = controller;
