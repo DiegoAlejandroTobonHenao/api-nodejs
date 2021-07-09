@@ -21,7 +21,7 @@ const UserSchema = new Schema({
         type: String,
         required: true
     },
-    image: string,
+    image: String,
     post: {
         type: [{
             type: Mongoose.Schema.Types.ObjectId,
@@ -48,7 +48,7 @@ UserSchema
     })
 
 UserSchema.methods = {
-    comparePassword = function(password) {
+    comparePassword: function(password) {
         return this.hashedPassword === Crypto.createHmac("sha256", password).digest("hex");
     }
 }
