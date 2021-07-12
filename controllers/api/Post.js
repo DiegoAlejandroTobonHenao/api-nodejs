@@ -114,7 +114,7 @@ controller.updatePost = async(req, res) => {
         return res.status(200).json(postUpdated.content)
     } catch (error) {
         console.log(error)
-        return res.status(500).json({ error: error.message });
+        return res.status(500).json({ error: "Internal Server Error" });
     }
 }
 
@@ -138,7 +138,7 @@ controller.deleteOnByID = async(req, res) => {
         }
         return res.status(200).json(postDeleted.content);
     } catch (err) {
-        return res.status(500).json({ msg: err.message });
+        return res.status(500).json({ msg: "Internal Server Error" });
     }
 }
 module.exports = controller;

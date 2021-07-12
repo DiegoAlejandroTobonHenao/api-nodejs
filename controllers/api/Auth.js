@@ -39,7 +39,7 @@ controller.login = async(req, res) => {
     if (!fieldValidation.success) {
         return res.status(400).json(fieldValidation.content);
     }
-    console.log("Hollll")
+
     try {
 
         const { identifier, password } = req.body;

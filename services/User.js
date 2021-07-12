@@ -83,8 +83,8 @@ service.findOneUsernameOrEmail = async(userName, email) => {
         return serviceResponse;
 
     } catch (err) {
-        console.log(err);
-        throw new Error("several Server Error");
+
+        throw err;
     }
 }
 
@@ -105,7 +105,7 @@ service.register = async({ userName, email, password, name, image }) => {
         return serviceResponse;
 
     } catch (error) {
-        throw new Error("Internal Server Error");
+        throw error;
     }
 }
 
