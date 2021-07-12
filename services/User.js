@@ -88,6 +88,28 @@ service.findOneUsernameOrEmail = async(userName, email) => {
     }
 }
 
+service.findOneById = async(_id) => {
+    let serviceResponse = {
+        success: true,
+        content: {}
+    }
+
+    try {
+        const user = await UserModel.findById(_id).select("-hashedPassword").exec();
+        if (!user) {
+            serviceResponse = {
+                success: false,
+                content: { error: "User not found" }
+            }
+        } else {
+            serviceResponse.content = user;
+        }
+
+        return serviceResponse;
+    } catch (err) {
+        throw err;
+    }
+}
 service.register = async({ userName, email, password, name, image }) => {
     let serviceResponse = {
         success: true,

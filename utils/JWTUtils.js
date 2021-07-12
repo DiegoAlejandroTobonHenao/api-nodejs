@@ -7,12 +7,12 @@ tools.createToken = (_id) => {
         _id
     };
 
-    return jwt.sign(payload, secret, { expiresIn: "1m" });
+    return jwt.sign(payload, secret, { expiresIn: process.env.JWTEXPTIME || "5m" });
 }
 
 tools.verifyToken = (token) => {
     try {
-        return jwt.sign(token, secret);
+        return jwt.verify(token, secret);
     } catch (err) {
         return false;
     }
