@@ -1,7 +1,7 @@
 const PostModel = require('../models/Post');
 const service = {};
 
-service.verifyCreatedField = ({ title, description, image, user }) => {
+service.verifyCreatedField = ({ title, description, image }) => {
 
     let serviceResponse = {
         success: true,
@@ -10,11 +10,11 @@ service.verifyCreatedField = ({ title, description, image, user }) => {
         }
     }
 
-    if (!title || !user) {
+    if (!title) {
         serviceResponse = {
             success: false,
             content: {
-                msg: "empty fields"
+                msg: "Title is required"
             }
         }
         return serviceResponse;
@@ -45,7 +45,7 @@ service.verifyUpdateFields = ({ title, description, image }) => {
     return serviceResponse;
 
 }
-service.create = async({ title, description, image, user }) => {
+service.create = async({ title, description, image }, user) => {
     let serviceResponse = {
         success: true,
         content: {
@@ -125,7 +125,12 @@ service.findAll = async(page, limit) => {
             sort: [{ createdAt: -1 }]
         }).exec()
 
-        serviceResponse.content = posts
+        serviceResponse.content = {
+            posts,
+            count: posts.length,
+            page,
+            limit
+        }
         return serviceResponse;
     } catch (err) {
         throw err;
@@ -220,5 +225,19 @@ service.deleteOnByID = async(_id) => {
     } catch (error) {
         throw error;
     }
+}
+
+service.verifyUserAuthority = (post, user) => {
+    let serviceResponse = {
+        success: true,
+        content: { msg: "User authorized" }
+    }
+    if (!post.user._id.equals(user._id)) {
+        serviceResponse = {
+            success: false,
+            content: { msg: "this post is not authorized to you" }
+        }
+    }
+    return serviceResponse;
 }
 module.exports = service;

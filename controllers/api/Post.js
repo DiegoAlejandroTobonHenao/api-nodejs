@@ -11,7 +11,8 @@ controller.create = async(req, res) => {
     }
 
     try {
-        const post = await service.create(body);
+        const { user } = req;
+        const post = await service.create(body, user._id);
         if (!post.success) {
             return res.status(409).json(post.content);
             // peticion no aceptable
@@ -101,6 +102,12 @@ controller.updatePost = async(req, res) => {
             return res.status(404).json(postExists.content);
         }
 
+        const { user } = req;
+
+        const userAuthority = service.verifyUserAuthority(postExists.content, user);
+        if (!userAuthority.success) {
+            return res.status(401).json(userAuthority.content);
+        }
         const postUpdated = await service.updateOneByID(
             postExists.content,
             fieldVerified.content,
@@ -129,6 +136,13 @@ controller.deleteOnByID = async(req, res) => {
         const post = await service.findOneById(_id);
         if (!post.success) {
             return res.status(404).json(post.content);
+        }
+
+        const { user } = req;
+
+        const userAuthority = service.verifyUserAuthority(post.content, user);
+        if (!userAuthority.success) {
+            return res.status(401).json(userAuthority.content);
         }
 
         const postDeleted = await service.deleteOnByID(_id);

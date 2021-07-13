@@ -23,7 +23,7 @@ controller.register = async(req, res) => {
         if (!userRegistered.success) {
             return res.status(409).json(userRegistered.content);
         }
-        token
+
         return res.status(201).json(userRegistered.content);
     } catch (error) {
         console.log(error);
