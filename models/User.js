@@ -22,17 +22,10 @@ const UserSchema = new Schema({
         required: true
     },
     image: String,
-    post: {
-        type: [{
-            type: Mongoose.Schema.Types.ObjectId,
-            rel: "Post"
-        }]
-    },
-
     savedPost: {
         type: [{
             type: Mongoose.Schema.Types.ObjectId,
-            rel: "Post"
+            ref: "Post"
         }]
     }
 }, { timeStamp: true });

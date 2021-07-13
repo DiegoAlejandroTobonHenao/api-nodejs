@@ -24,7 +24,8 @@ const PostSchema = new Schema({
         default: []
     },
     user: {
-        type: String,
+        type: Mongoose.Schema.Types.ObjectId,
+        ref: "User",
         required: true,
     },
 

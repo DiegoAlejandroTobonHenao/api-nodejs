@@ -122,7 +122,7 @@ service.findAll = async(page, limit) => {
         const posts = await PostModel.find({}, undefined, {
             skip: page * limit,
             limit: limit,
-            sort: [{ updateAt: -1 }]
+            sort: [{ createdAt: -1 }]
         }).exec()
 
         serviceResponse.content = posts

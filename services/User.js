@@ -5,7 +5,7 @@ const emailRegex = new RegExp("^([a-zA-Z0-9_\.\-])+\@(([a-zA-Z0-9_\.\-])+\.)+([a
 
 const service = {};
 
-service.verifyRegisterFields = ({ userName, email, password, name, photo }) => {
+service.verifyRegisterFields = ({ userName, email, password, name, image }) => {
 
     let serviceResponse = {
         success: true,
@@ -39,6 +39,51 @@ service.verifyRegisterFields = ({ userName, email, password, name, photo }) => {
                 msg: "password must be 8 - 32 characters and strong"
             }
         }
+    }
+    return serviceResponse;
+}
+
+service.verifyUpdateFields = ({ userName, email, password, name, image }) => {
+    let serviceResponse = {
+        success: true,
+        content: {}
+    }
+
+    if (!userName && !email && !password && !name && !image) {
+        serviceResponse = {
+            success: false,
+            content: { msg: "All empty fields" }
+        }
+        return serviceResponse;
+    }
+
+    if (userName) serviceResponse.content.userName = userName;
+    if (name) serviceResponse.content.name = name;
+    if (image) serviceResponse.content.image = image;
+
+    if (password) {
+        if (!passwordRegex.test(password)) {
+            serviceResponse = {
+                success: false,
+                content: {
+                    msg: "password must be 8 - 32 characters and strong"
+                }
+            }
+            return serviceResponse;
+        }
+        serviceResponse.content.password = password;
+    }
+    if (email) {
+        if (!emailRegex.test(email)) {
+            serviceResponse = {
+                success: false,
+                content: {
+                    msg: "Format fields incorrect"
+                }
+            }
+            return serviceResponse;
+        }
+        serviceResponse.content.email = email;
     }
     return serviceResponse;
 }
@@ -131,4 +176,28 @@ service.register = async({ userName, email, password, name, image }) => {
     }
 }
 
+service.updateById = async(user, contentToUpdate) => {
+    let serviceResponse = {
+        success: true,
+        content: { msg: "User Update successfully" }
+    }
+
+    try {
+        Object.keys(contentToUpdate).forEach(key => {
+            user[key] = contentToUpdate[key];
+        })
+
+        const userUpdate = await user.save();
+        if (!userUpdate) {
+            serviceResponse = {
+                success: false,
+                content: { msg: "User not updated" }
+            }
+        }
+        return serviceResponse;
+    } catch (error) {
+        console.log(error)
+        throw error;
+    }
+}
 module.exports = service;
