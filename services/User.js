@@ -200,4 +200,37 @@ service.updateById = async(user, contentToUpdate) => {
         throw error;
     }
 }
+
+service.addSavedPosts = async(user, postId) => {
+
+    let serviceResponse = {
+        success: true,
+        content: { msg: "Post registered successfully" }
+    }
+
+    try {
+        const alreadyExists = user.savedPost.some(post => post.equals(postId));
+        if (alreadyExists) {
+            serviceResponse = {
+                success: false,
+                content: { msg: "Post is in list" }
+            }
+            return serviceResponse;
+        }
+        user.savedPost.push(postId);
+        const userUpdate = await user.save();
+        if (!userUpdate) {
+            serviceResponse = {
+                success: false,
+                content: { msg: "Post not saved in list" }
+            }
+        }
+
+        return serviceResponse;
+
+    } catch (error) {
+        throw error;
+    }
+
+}
 module.exports = service;

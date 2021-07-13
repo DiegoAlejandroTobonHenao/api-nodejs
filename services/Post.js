@@ -240,4 +240,21 @@ service.verifyUserAuthority = (post, user) => {
     }
     return serviceResponse;
 }
+
+service.findAllByUser = async(userID) => {
+    let serviceResponse = {
+        success: true,
+        content: {}
+    }
+
+    try {
+        const posts = await PostModel.find({ user: userID }).exec();
+
+        serviceResponse.content = posts;
+        return serviceResponse;
+    } catch (error) {
+        throw error;
+
+    }
+};
 module.exports = service;

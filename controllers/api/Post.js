@@ -1,6 +1,7 @@
 const service = require('../../services/Post');
 const { verifyByID } = require('../../utils/MongoUtils');
 const { verifyTypeNumber } = require('../../utils/MicUtil');
+const UserService = require('../../services/User');
 const controller = {};
 
 controller.create = async(req, res) => {
@@ -153,6 +154,28 @@ controller.deleteOnByID = async(req, res) => {
         return res.status(200).json(postDeleted.content);
     } catch (err) {
         return res.status(500).json({ msg: "Internal Server Error" });
+    }
+}
+
+controller.findAllPostsByUser = async(req, res) => {
+    const { id = req.user._id } = req.query;
+    if (!verifyByID(id)) {
+        return res.status(400).json({ msg: "Error in ID" });
+    }
+
+    try {
+
+        const userExists = await UserService.findOneById(id);
+        if (!userExists.success) {
+            return res.status(404).json(userExists.content);
+        }
+
+        const postsByUser = await service.findAllByUser(id);
+
+        return res.status(200).json(postsByUser.content);
+
+    } catch (error) {
+        throw error;
     }
 }
 module.exports = controller;
